@@ -1,11 +1,15 @@
 <template>
     <div class="v-img-upload">
-        <div v-on:click.prevent = 'uploadCancel' v-if="isCancel" class="v-img-cancel">
-            <i class="fa fa-times-circle"></i>
-        </div>
+        <transition name="v-cancel">
+            <div v-on:click.prevent = 'uploadCancel' v-show="isCancel" class="v-img-cancel">
+                <i class="fa fa-times-circle"></i>
+            </div>
+        </transition>
         <div class="v-img-show">
             <i class="fa fa-plus-square"></i>
-            <div class="img" ref="img"></div>
+            <transition name="v-img-upload">
+                <div v-show="isUpload" class="img" ref="img"></div>
+            </transition>
             <input ref="uploadInp" v-on:change='uploadImg' class="v-img-upload-btn" type="file">
         </div>
     </div>
@@ -15,14 +19,18 @@
 export default {
         data (){
             return {
-                isCancel: false
+                isCancel: false,
+                isUpload:false,
+                files:''
             }
+        },
+        mounted (){
+             this.files = this.$refs.uploadInp
         },
         methods:{
             uploadImg(){
-                this.isCancel = !this.isCancel
-                var files = this.$refs.uploadInp.files[0]
-                this.$refs.img.style.backgroundImage = "url("+this.getImgFile(files)+")"
+                this.$refs.img.style.backgroundImage = "url("+this.getImgFile(this.files.files[0])+")"
+                this.isCancel = this.isUpload = true
             },
             getImgFile(file) {
                 var url = null;
@@ -36,10 +44,8 @@ export default {
                 return url
             },
             uploadCancel (){
-                console.log(1)
-                this.$refs.img.removeAttribute('style')
-                this.isCancel = false
-                // this.files = null
+                this.files.value = null
+                this.isUpload = this.isCancel = false
             }
         }
 }
@@ -78,6 +84,8 @@ export default {
                 background-repeat: no-repeat;
                 background-position: center;
                 background-size: cover;
+                transition: all .2s;
+                transform: translate3d(0,0,0)
             }
             i{
                 font-size: 20px;
@@ -97,6 +105,62 @@ export default {
             line-height: 20px;
             font-size: 15px;
             color: #eb0404;
+            transition: all .2s;
+            transform: translate3d(0,0,0)
+        }
+    }
+    .v-cancel-enter-active{
+        animation: cancelShow;
+    }
+    .v-cancel-leave-active{
+        animation: cancelShow;
+    }
+
+    @keyframes cancelShow {
+        0%{
+            right: 8px;
+            top: 8px;
+        }
+        100%{
+            right: -8px;
+            top: -8px;
+        }
+    }
+    @keyframes cancelShow {
+        0%{
+            right: -8px;
+            top: -8px;
+        }
+        100%{
+            right: 8px;
+            top: 8px;
+        }
+    }
+
+
+    .v-img-upload-enter-active{
+        animation: imgshow;
+        opacity: 0;
+    }
+    .v-img-upload-leave-active{
+        animation: imgHide;
+        opacity: 0;
+    }
+
+    @keyframes imgshow {
+        0%{
+            opacity: 0
+        }
+        100%{
+            opacity: 1
+        }
+    }
+    @keyframes imgHide {
+        0%{
+            opacity: 1
+        }
+        100%{
+            opacity: 0
         }
     }
 </style>
