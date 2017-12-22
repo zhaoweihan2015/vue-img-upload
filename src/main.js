@@ -7,6 +7,7 @@ import Util from './libs/util';
 import App from './app.vue';
 import 'iview/dist/styles/iview.css';
 
+import './libs/css/font-awesome.min.css'
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
