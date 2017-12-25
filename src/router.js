@@ -10,7 +10,7 @@ const routers = [{
         meta: {
             title: ''
         },
-        component: (resolve) => require(['./views/upload.vue'], resolve)
+        component: (resolve) => require(['./views/show.vue'], resolve)
     }
 ];
 export default routers;

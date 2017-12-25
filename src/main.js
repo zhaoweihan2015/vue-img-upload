@@ -37,13 +37,19 @@ router.afterEach(() => {
 
 const store = new Vuex.Store({
     state: {
-
+        previewUrl: '',
+        isPreviewShow: false
     },
     getters: {
 
     },
     mutations: {
-
+        setPreviewUrl(state, url) {
+            state.previewUrl = url
+        },
+        changePreviewState() {
+            state.isPreviewShow = !state.isPreviewShow
+        }
     },
     actions: {
 

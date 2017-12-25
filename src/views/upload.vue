@@ -1,27 +1,34 @@
 <template>
     <div class="v-img-upload">
-        <transition name="v-cancel">
             <div v-on:click.prevent = 'uploadCancel' v-show="isCancel" class="v-img-cancel">
                 <i class="fa fa-times-circle"></i>
             </div>
-        </transition>
         <div class="v-img-show">
             <i class="fa fa-plus-square"></i>
             <transition name="v-img-upload">
                 <div v-show="isUpload" class="img" ref="img"></div>
             </transition>
-            <input ref="uploadInp" v-on:change='uploadImg' class="v-img-upload-btn" type="file">
+                <div v-if="isHover" v-on:click.prevent = 'showPreview' class="preview" ref="preview">
+                    <i class="fa fa-eye"></i>
+                </div>
+            <input v-if="!isUpload" ref="uploadInp" v-on:change='uploadImg' class="v-img-upload-btn" type="file">
         </div>
     </div>
 </template>
 
 <script>
+import bus from './bus.js'
 export default {
         data (){
             return {
                 isCancel: false,
                 isUpload:false,
-                files:''
+                isHover:false,
+                files:'',
+                msg:{
+                    isShow:true,
+                    url:''
+                }
             }
         },
         mounted (){
@@ -29,11 +36,13 @@ export default {
         },
         methods:{
             uploadImg(){
-                this.$refs.img.style.backgroundImage = "url("+this.getImgFile(this.files.files[0])+")"
-                this.isCancel = this.isUpload = true
+                let url = this.getImgFile(this.files.files[0])
+                this.msg.url = url
+                this.$refs.img.style.backgroundImage = "url("+url+")"
+                this.isHover = this.isCancel = this.isUpload = true
             },
             getImgFile(file) {
-                var url = null;
+                let url = null;
                 if(window.createObjectURL != undefined) {
                     url = window.createObjectURL(file)
                 } else if(window.URL != undefined) {
@@ -46,6 +55,9 @@ export default {
             uploadCancel (){
                 this.files.value = null
                 this.isUpload = this.isCancel = false
+            },
+            showPreview(){
+                bus.$emit('preview-show',this.msg)
             }
         }
 }
@@ -80,12 +92,25 @@ export default {
             input{
                 opacity: 0;
             }
-            .img{
+            .img,.preview{
                 background-repeat: no-repeat;
                 background-position: center;
                 background-size: cover;
                 transition: all .2s;
                 transform: translate3d(0,0,0)
+            }
+            .preview{
+                opacity: 0;
+                background: rgba(0,0,0,0.5);
+                position: absolute;
+                color: white;
+                height: 100%;
+                width: 100%;
+                z-index: 5;
+
+                &:hover{
+                    opacity: 1;
+                }
             }
             i{
                 font-size: 20px;
@@ -109,34 +134,6 @@ export default {
             transform: translate3d(0,0,0)
         }
     }
-    .v-cancel-enter-active{
-        animation: cancelShow;
-    }
-    .v-cancel-leave-active{
-        animation: cancelShow;
-    }
-
-    @keyframes cancelShow {
-        0%{
-            right: 8px;
-            top: 8px;
-        }
-        100%{
-            right: -8px;
-            top: -8px;
-        }
-    }
-    @keyframes cancelShow {
-        0%{
-            right: -8px;
-            top: -8px;
-        }
-        100%{
-            right: 8px;
-            top: 8px;
-        }
-    }
-
 
     .v-img-upload-enter-active{
         animation: imgshow;

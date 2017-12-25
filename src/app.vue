@@ -25,6 +25,6 @@
 <style>
     body{
         padding: 40px!important;
-        background-color: #000!important;
+        background-color: #888!important;
     }
 </style>
